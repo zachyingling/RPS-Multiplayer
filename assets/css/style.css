@@ -1,0 +1,54 @@
+textarea {
+  resize: none;
+}
+
+#clear {
+  clear: both;
+}
+
+body {
+  margin: 0px;
+}
+
+#header {
+  background-color: #5bce4a;
+  text-align: center;
+  font-size: 2rem;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+body {
+  background-color: #71a068;
+}
+
+.name-input {
+  margin-top: 20px;
+  margin-left: calc(50% - 75px);
+  margin-bottom: 20px;
+}
+
+.box {
+  border: 2px solid black;
+  height: 100px;
+  width: 150px;
+  float: left;
+}
+
+.box-container {
+  margin-left: calc(50% - 231px);
+  margin-bottom: 50px;
+}
+
+#chat-box {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.chat-box-div {
+  margin-left: calc(50% - 235px);
+}
+
+#message {
+  width: 300px;
+}

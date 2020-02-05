@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="assets/javascript/logic.js"></script>
+    <title>Multiplayer Rock, Paper, Scissors Game</title>
+  </head>
+  <body>
+    <header id="header">Multiplayer Rock, Paper, Scissors Game</header>
+    <div class="name-input">
+      <input
+        type="text"
+        name="name"
+        id="name-input"
+        value="Name"
+        onfocus="this.value = '';"
+      />
+      <button type="submit" id="start-button">Start</button>
+    </div>
+    <div class="box-container">
+      <div class="box">
+        <p class="waiting">Waiting for Player 1</p>
+      </div>
+      <div class="box"></div>
+      <div class="box">
+        <p class="waiting">Waiting for Player 2</p>
+      </div>
+      <br id="clear" />
+    </div>
+    <div class="chat-box-div">
+      <textarea
+        name="chat-box"
+        id="chat-box"
+        cols="60"
+        rows="7"
+        readonly
+      ></textarea>
+      <input type="text" name="message" id="message" />
+      <button type="submit" id="message-send">Send</button>
+    </div>
+  </body>
+</html>
