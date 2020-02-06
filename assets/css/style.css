@@ -11,7 +11,7 @@ body {
 }
 
 #header {
-  background-color: #5bce4a;
+  background-color: #7ecc72;
   text-align: center;
   font-size: 2rem;
   padding-top: 10px;
@@ -30,13 +30,13 @@ body {
 
 .box {
   border: 2px solid black;
-  height: 100px;
-  width: 150px;
+  height: 150px;
+  width: 200px;
   float: left;
 }
 
 .box-container {
-  margin-left: calc(50% - 231px);
+  margin-left: calc(50% - 306px);
   margin-bottom: 50px;
 }
 
@@ -50,5 +50,5 @@ body {
 }
 
 #message {
-  width: 300px;
+  width: 415px;
 }
