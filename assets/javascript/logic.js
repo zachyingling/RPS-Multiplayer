@@ -16,11 +16,16 @@ let database = firebase.database();
 let connectedFlag = false;
 // false is flag that no more players are needed
 let needPlayers = true;
+// Set to true if that is what the user's role is(player1, player2, or waiting to join the game)
+let player1 = false;
+let player2 = false;
+let waiting = false;
 let messages = [];
 let name = "";
 let connectedRef = database.ref(".info/connected");
 let connectionsRef = database.ref("/connections");
 let messagesRef = database.ref("/messages");
+let playersRef = database.ref("/players");
 
 // Add connected to firebase
 function addConnected(name) {
@@ -60,19 +65,34 @@ function scrollToBottom() {
 // Puts all of the messages in messages array to the text area
 function displayMessages() {
   $("#chat-box").empty();
-  for (let i = 0; i < messages.length; i++) {
-    $("#chat-box").append(messages[i] + "&#13;&#10;");
-  }
-  scrollToBottom();
-}
-
-$(document).ready(function() {
   // Sets local array messages to what messages are saved in the database
   messagesRef.once("value", function(data) {
     let tempMessagesValue = Object.values(data.val());
     for (let i = 0; i < tempMessagesValue.length; i++) {
       messages[i] = tempMessagesValue[i];
     }
+  });
+  for (let i = 0; i < messages.length; i++) {
+    $("#chat-box").append(messages[i] + "&#13;&#10;");
+  }
+  scrollToBottom();
+}
+
+function assignPlayers() {
+  // if(needPlayers === true && snap.child("connections").numChildren() >= 2){
+  // } else {
+  // }
+}
+
+function playGame() {
+  $(".name-input").empty();
+  $(".name-input").append("<p>Hi " + name + "! You are <p>");
+}
+
+$(document).ready(function() {
+  displayMessages();
+
+  messagesRef.on("value", function(data) {
     displayMessages();
   });
 
@@ -86,13 +106,15 @@ $(document).ready(function() {
       addConnected(name);
       displayConnected(name);
       displayMessages();
+      assignPlayers();
+      playGame();
     }
   });
 
   $("#message-send").on("click", function() {
     if (connectedFlag === false) {
       alert(
-        "Please put your name in the top and connect to the game and type in chat."
+        "Please put your name in the top and connect to the game to type in chat."
       );
     } else {
       let tempMessage = $("#message")
