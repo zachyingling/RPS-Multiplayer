@@ -19,6 +19,8 @@ let needPlayers = true;
 let messages = [];
 let name = "";
 let role = "";
+let player1Connected = false;
+let player2Connected = false;
 let connectedRef = database.ref(".info/connected");
 let connectionsRef = database.ref("/connections");
 let messagesRef = database.ref("/messages");
@@ -91,7 +93,8 @@ function assignPlayers() {
 function displayingGame() {
   player1Ref.on("value", function(snap) {
     if (snap.val() === null) {
-      return;
+      $("#player-1").empty();
+      $("#player-1").text("Waiting for player 1.");
     } else {
       $("#player-1").empty();
       let newName = $("<h3>");
@@ -105,12 +108,14 @@ function displayingGame() {
         "Wins: " + snap.val().wins + " Loses: " + snap.val().loses
       );
       $("#player-1").append(statTracker);
+      player1Connected = true;
     }
   });
 
   player2Ref.on("value", function(snap) {
     if (snap.val() === null) {
-      return;
+      $("#player-2").empty();
+      $("#player-2").text("Waiting for player 2.");
     } else {
       $("#player-2").empty();
       let newName = $("<h3>");
@@ -124,9 +129,12 @@ function displayingGame() {
         "Wins: " + snap.val().wins + " Loses: " + snap.val().loses
       );
       $("#player-2").append(statTracker);
+      player2Connected = true;
     }
   });
 }
+
+function actualGameLogic() {}
 
 function playGame(role) {
   $(".name-input").empty();
@@ -139,7 +147,12 @@ function playGame(role) {
       wins: 0,
       loses: 0
     });
-    player1Ref.onDisconnect().remove();
+    player1Ref
+      .onDisconnect()
+      .remove()
+      .then(function() {
+        player1Connected = false;
+      });
   } else if (role === "player2") {
     player2Ref.set({
       playerName: name,
@@ -147,13 +160,21 @@ function playGame(role) {
       wins: 0,
       loses: 0
     });
-    player2Ref.onDisconnect().remove();
+    player2Ref
+      .onDisconnect()
+      .remove()
+      .then(function() {
+        player2Connected = false;
+      });
   } else {
     // Create a modal that says you are allowed to talk in chat you just won't  be able to play the game until someone leaves. When someone leaves, refresh the page, and join in.
     return;
   }
 
   displayingGame();
+  if (player1Connected === true && player2Connected === true) {
+    console.log("ffjghdjkfgid");
+  }
 }
 
 $(document).ready(function() {
