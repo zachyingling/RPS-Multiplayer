@@ -52,3 +52,17 @@ body {
 #message {
   width: 415px;
 }
+
+h3 {
+  margin: 0px;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.stat-tracker {
+  margin: 0px;
+  position: relative;
+  top: 114px;
+}

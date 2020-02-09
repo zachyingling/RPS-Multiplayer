@@ -35,12 +35,10 @@ function addConnected() {
 
     // If they are connected and put a name in the start bar
     if (snap.val() && name != "") {
-      var con = connectionsRef.push({
+      let con = connectionsRef.push({
         connected: true,
         playerName: name,
-        playerRole: role,
-        wins: 0,
-        loses: 0
+        playerRole: role
       });
       connectedFlag = true;
       con.onDisconnect().remove();
@@ -65,7 +63,6 @@ function displayMessages() {
   $("#chat-box").empty();
   // Sets local array messages to what messages are saved in the database
   messagesRef.once("value", function(data) {
-    console.log(Object.values(data.val()));
     let tempMessagesValue = Object.values(data.val());
     for (let i = 0; i < tempMessagesValue.length; i++) {
       messages[i] = tempMessagesValue[i];
@@ -91,13 +88,77 @@ function assignPlayers() {
   });
 }
 
+function displayingGame() {
+  player1Ref.on("value", function(snap) {
+    if (snap.val() === null) {
+      return;
+    } else {
+      $("#player-1").empty();
+      let newName = $("<h3>");
+      newName.text(snap.val().playerName);
+      newName.attr("class", "text-center");
+      $("#player-1").prepend(newName);
+
+      let statTracker = $("<p>");
+      statTracker.attr("class", "text-center stat-tracker");
+      statTracker.text(
+        "Wins: " + snap.val().wins + " Loses: " + snap.val().loses
+      );
+      $("#player-1").append(statTracker);
+    }
+  });
+
+  player2Ref.on("value", function(snap) {
+    if (snap.val() === null) {
+      return;
+    } else {
+      $("#player-2").empty();
+      let newName = $("<h3>");
+      newName.text(snap.val().playerName);
+      newName.attr("class", "text-center");
+      $("#player-2").prepend(newName);
+
+      let statTracker = $("<p>");
+      statTracker.attr("class", "text-center stat-tracker");
+      statTracker.text(
+        "Wins: " + snap.val().wins + " Loses: " + snap.val().loses
+      );
+      $("#player-2").append(statTracker);
+    }
+  });
+}
+
 function playGame(role) {
   $(".name-input").empty();
   $(".name-input").append("<p>Hi " + name + "! You are " + role + "</p>");
+
+  if (role === "player1") {
+    player1Ref.set({
+      playerName: name,
+      choice: "rock",
+      wins: 0,
+      loses: 0
+    });
+    player1Ref.onDisconnect().remove();
+  } else if (role === "player2") {
+    player2Ref.set({
+      playerName: name,
+      choice: "rock",
+      wins: 0,
+      loses: 0
+    });
+    player2Ref.onDisconnect().remove();
+  } else {
+    // Create a modal that says you are allowed to talk in chat you just won't  be able to play the game until someone leaves. When someone leaves, refresh the page, and join in.
+    return;
+  }
+
+  displayingGame();
 }
 
 $(document).ready(function() {
   displayMessages();
+  displayingGame();
 
   messagesRef.on("value", function(data) {
     displayMessages();
