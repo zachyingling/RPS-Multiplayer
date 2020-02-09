@@ -16,19 +16,17 @@ let database = firebase.database();
 let connectedFlag = false;
 // false is flag that no more players are needed
 let needPlayers = true;
-// Set to true if that is what the user's role is(player1, player2, or waiting to join the game)
-let player1 = false;
-let player2 = false;
-let waiting = false;
 let messages = [];
 let name = "";
+let role = "";
 let connectedRef = database.ref(".info/connected");
 let connectionsRef = database.ref("/connections");
 let messagesRef = database.ref("/messages");
-let playersRef = database.ref("/players");
+let player1Ref = database.ref("/player1");
+let player2Ref = database.ref("/player2");
 
 // Add connected to firebase
-function addConnected(name) {
+function addConnected() {
   connectedRef.on("value", function(snap) {
     // Test and see if this feature is working
     if (snap.child("connections").numChildren() >= 2) {
@@ -39,8 +37,8 @@ function addConnected(name) {
     if (snap.val() && name != "") {
       var con = connectionsRef.push({
         connected: true,
-        name: name,
-        player: needPlayers,
+        playerName: name,
+        playerRole: role,
         wins: 0,
         loses: 0
       });
@@ -67,6 +65,7 @@ function displayMessages() {
   $("#chat-box").empty();
   // Sets local array messages to what messages are saved in the database
   messagesRef.once("value", function(data) {
+    console.log(Object.values(data.val()));
     let tempMessagesValue = Object.values(data.val());
     for (let i = 0; i < tempMessagesValue.length; i++) {
       messages[i] = tempMessagesValue[i];
@@ -79,14 +78,22 @@ function displayMessages() {
 }
 
 function assignPlayers() {
-  // if(needPlayers === true && snap.child("connections").numChildren() >= 2){
-  // } else {
-  // }
+  connectionsRef.once("value").then(function(snap) {
+    if (needPlayers === true && snap.numChildren() == 0) {
+      role = "player1";
+    } else if (needPlayers === true && snap.numChildren() == 1) {
+      role = "player2";
+    } else {
+      role = "waiting";
+    }
+    addConnected();
+    playGame(role);
+  });
 }
 
-function playGame() {
+function playGame(role) {
   $(".name-input").empty();
-  $(".name-input").append("<p>Hi " + name + "! You are <p>");
+  $(".name-input").append("<p>Hi " + name + "! You are " + role + "</p>");
 }
 
 $(document).ready(function() {
@@ -103,11 +110,9 @@ $(document).ready(function() {
       name = $("#name-input")
         .val()
         .trim();
-      addConnected(name);
       displayConnected(name);
       displayMessages();
       assignPlayers();
-      playGame();
     }
   });
 
