@@ -16,6 +16,7 @@ let database = firebase.database();
 let connectedFlag = false;
 // false is flag that no more players are needed
 let needPlayers = true;
+let turn;
 let messages = [];
 let name = "";
 let role = "";
@@ -26,6 +27,8 @@ let connectionsRef = database.ref("/connections");
 let messagesRef = database.ref("/messages");
 let player1Ref = database.ref("/player1");
 let player2Ref = database.ref("/player2");
+let player1Choice;
+let player2Choice;
 
 // Add connected to firebase
 function addConnected() {
@@ -116,6 +119,7 @@ function displayingGame() {
     if (snap.val() === null) {
       $("#player-2").empty();
       $("#player-2").text("Waiting for player 2.");
+      player2Connected = false;
     } else {
       $("#player-2").empty();
       let newName = $("<h3>");
@@ -132,9 +136,125 @@ function displayingGame() {
       player2Connected = true;
     }
   });
+
+  if (player1Connected === true && player2Connected === true) {
+    actualGameLogic();
+  }
 }
 
-function actualGameLogic() {}
+function actualGameLogic() {
+  // turn is set to true if its your turn
+  if (role === "player1") {
+    player1Ref.once("value", function(data) {
+      turn = data.val().turn;
+    });
+  } else if (role === "player2") {
+    player2Ref.once("value", function(data) {
+      turn = data.val().turn;
+    });
+  }
+
+  // Player 1 Turn Code
+  if (turn === true && role === "player1") {
+    $("#turn-text").text("It's your turn.");
+    let newRock = $("<div class='choice text-center' id='rock'>");
+    newRock.text("Rock");
+    let newPaper = $("<div class='choice text-center' id='paper'>");
+    newPaper.text("Paper");
+    let newScissors = $("<div class='choice text-center' id='scissors'>");
+    let mainDiv = $("<div class='choices'>");
+    newScissors.text("Scissors");
+    $(mainDiv).append(newRock);
+    $(mainDiv).append(newPaper);
+    $(mainDiv).append(newScissors);
+    $("#player-1").append(mainDiv);
+
+    $(document).on("click", ".choice", function() {
+      turn = false;
+      $("#turn-text").empty();
+      $("#turn-text").text("Its your opponents turn.");
+      mainDiv.empty();
+      player1Ref.update({
+        choice: this.id,
+        turn: false
+      });
+      player2Ref.update({
+        turn: true
+      });
+    });
+  }
+
+  // Player 2 Turn Code
+  if (turn === true && role === "player2") {
+    $("#turn-text").text("It's your turn.");
+    let newRock = $("<div class='choice text-center' id='rock'>");
+    newRock.text("Rock");
+    let newPaper = $("<div class='choice text-center' id='paper'>");
+    newPaper.text("Paper");
+    let newScissors = $("<div class='choice text-center' id='scissors'>");
+    let mainDiv = $("<div class='choices'>");
+    newScissors.text("Scissors");
+    $(mainDiv).append(newRock);
+    $(mainDiv).append(newPaper);
+    $(mainDiv).append(newScissors);
+    $("#player-2").append(mainDiv);
+
+    $(document).on("click", ".choice", function() {
+      turn = false;
+      $("#turn-text").empty();
+      $("#turn-text").text("Its your opponents turn.");
+      mainDiv.empty();
+      player1Ref.update({
+        turn: true
+      });
+      player2Ref.update({
+        choice: this.id,
+        turn: false
+      });
+      player1Ref.once("value", function(data) {
+        player1Choice = data.val().choice;
+      });
+      player2Ref.once("value", function(data) {
+        player2Choice = data.val().choice;
+      });
+      if (player1Choice === "rock") {
+        if (player2Choice === "rock") {
+          // Draw
+        }
+        if (player2Choice === "paper") {
+          // p2 wins
+        }
+        if (player2Choice === "scissors") {
+          // p1 wins
+        }
+      }
+      if (player1Choice === "paper") {
+        if (player2Choice === "rock") {
+          // p1 wins
+        }
+        if (player2Choice === "paper") {
+          // draw
+        }
+        if (player2Choice === "scissors") {
+          // p2 wins
+        }
+      }
+      if (player1Choice === "scissors") {
+        if (player2Choice === "rock") {
+          // p2 wins
+        }
+        if (player2Choice === "paper") {
+          // p1 wins
+        }
+        if (player2Choice === "scissors") {
+          // Draw
+        }
+      }
+    });
+
+    // Testing to see who won player 1 or player 2
+  }
+}
 
 function playGame(role) {
   $(".name-input").empty();
@@ -143,38 +263,27 @@ function playGame(role) {
   if (role === "player1") {
     player1Ref.set({
       playerName: name,
-      choice: "rock",
+      choice: "rock", // This will change whenever the game is played
       wins: 0,
-      loses: 0
+      loses: 0,
+      turn: true
     });
-    player1Ref
-      .onDisconnect()
-      .remove()
-      .then(function() {
-        player1Connected = false;
-      });
+    player1Ref.onDisconnect().remove();
   } else if (role === "player2") {
     player2Ref.set({
       playerName: name,
       choice: "rock",
       wins: 0,
-      loses: 0
+      loses: 0,
+      turn: false
     });
-    player2Ref
-      .onDisconnect()
-      .remove()
-      .then(function() {
-        player2Connected = false;
-      });
+    player2Ref.onDisconnect().remove();
   } else {
     // Create a modal that says you are allowed to talk in chat you just won't  be able to play the game until someone leaves. When someone leaves, refresh the page, and join in.
     return;
   }
 
   displayingGame();
-  if (player1Connected === true && player2Connected === true) {
-    console.log("ffjghdjkfgid");
-  }
 }
 
 $(document).ready(function() {
@@ -183,6 +292,14 @@ $(document).ready(function() {
 
   messagesRef.on("value", function(data) {
     displayMessages();
+  });
+
+  player1Ref.on("value", function(data) {
+    displayingGame();
+  });
+
+  player2Ref.on("value", function(data) {
+    displayingGame();
   });
 
   $("#start-button").on("click", function() {

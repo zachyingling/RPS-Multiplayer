@@ -66,3 +66,12 @@ h3 {
   position: relative;
   top: 114px;
 }
+
+.choice {
+  margin-bottom: 10px;
+}
+
+.choice:hover {
+  background-color: yellow;
+  border: 2px solid black;
+}
