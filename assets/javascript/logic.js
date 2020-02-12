@@ -432,7 +432,8 @@ $(document).ready(function() {
     displayingGame();
   });
 
-  $("#start-button").on("click", function() {
+  $("#start-button").on("click", function(event) {
+    event.preventDefault();
     if ($("#name-input").val() === "" || connectedFlag === true) {
       return;
     } else {
@@ -445,7 +446,8 @@ $(document).ready(function() {
     }
   });
 
-  $("#message-send").on("click", function() {
+  $("#message-send").on("click", function(event) {
+    event.preventDefault();
     if (connectedFlag === false) {
       alert(
         "Please put your name in the top and connect to the game to type in chat."

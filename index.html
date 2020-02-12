@@ -21,14 +21,16 @@
   <body>
     <header id="header">Multiplayer Rock, Paper, Scissors Game</header>
     <div class="name-input">
-      <input
-        type="text"
-        name="name"
-        id="name-input"
-        value="Name"
-        onfocus="this.value = '';"
-      />
-      <button type="submit" id="start-button">Start</button>
+      <form name="enter-lobby">
+        <input
+          type="text"
+          name="name"
+          id="name-input"
+          value="Name"
+          onfocus="this.value = '';"
+        />
+        <button type="submit" id="start-button">Start</button>
+      </form>
     </div>
     <div class="text-center" id="turn-text"></div>
     <div class="box-container">
@@ -49,8 +51,10 @@
         rows="7"
         readonly
       ></textarea>
-      <input type="text" name="message" id="message" />
-      <button type="submit" id="message-send">Send</button>
+      <form name="message-send">
+        <input type="text" name="message" id="message" />
+        <button type="submit" id="message-send">Send</button>
+      </form>
     </div>
   </body>
 </html>
