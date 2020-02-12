@@ -29,6 +29,175 @@ let player1Ref = database.ref("/player1");
 let player2Ref = database.ref("/player2");
 let player1Choice;
 let player2Choice;
+let wins = 0;
+let loses = 0;
+
+function displayWinner() {
+  console.log("asdf");
+  player1Ref.once("value", function(data) {
+    if (data.val().turn === true) {
+      player1Ref.once("value", function(data) {
+        player1Choice = data.val().choice;
+      });
+      player2Ref.once("value", function(data) {
+        player2Choice = data.val().choice;
+      });
+      if (player1Choice === "rock") {
+        if (player2Choice === "rock") {
+          $("#middle-box").text("It's a draw");
+          setTimeout(function() {
+            $("#middle-box").empty();
+          }, 4000);
+          // Draw
+        }
+        if (player2Choice === "paper") {
+          $("#middle-box").text("Player 2 wins!");
+          player1Ref.once("value", function(data) {
+            loses = data.val().loses;
+          });
+          player2Ref.once("value", function(data) {
+            wins = data.val().wins;
+          });
+
+          player1Ref.update({
+            loses: loses + 1
+          });
+          player2Ref.update({
+            wins: wins + 1
+          });
+          setTimeout(function() {
+            $("#middle-box").empty();
+          }, 4000);
+          // p2 winss
+        }
+        if (player2Choice === "scissors") {
+          $("#middle-box").text("Player 1 wins!");
+          player2Ref.once("value", function(data) {
+            loses = data.val().loses;
+          });
+          player1Ref.once("value", function(data) {
+            wins = data.val().wins;
+          });
+
+          player1Ref.update({
+            wins: wins + 1
+          });
+          player2Ref.update({
+            loses: loses + 1
+          });
+          setTimeout(function() {
+            $("#middle-box").empty();
+          }, 4000);
+          // p1 wins
+        }
+      }
+      if (player1Choice === "paper") {
+        if (player2Choice === "rock") {
+          $("#middle-box").text("Player 1 wins!");
+          player2Ref.once("value", function(data) {
+            loses = data.val().loses;
+          });
+          player1Ref.once("value", function(data) {
+            wins = data.val().wins;
+          });
+
+          player1Ref.update({
+            wins: wins + 1
+          });
+          player2Ref.update({
+            loses: loses + 1
+          });
+          setTimeout(function() {
+            $("#middle-box").empty();
+          }, 4000);
+          // p1 wins
+        }
+        if (player2Choice === "paper") {
+          $("#middle-box").text("It's a draw");
+          setTimeout(function() {
+            $("#middle-box").empty();
+          }, 4000);
+          // draw
+        }
+        if (player2Choice === "scissors") {
+          $("#middle-box").text("Player 2 wins!");
+          player1Ref.once("value", function(data) {
+            loses = data.val().loses;
+          });
+          player2Ref.once("value", function(data) {
+            wins = data.val().wins;
+          });
+
+          player1Ref.update({
+            loses: loses + 1
+          });
+          player2Ref.update({
+            wins: wins + 1
+          });
+          setTimeout(function() {
+            $("#middle-box").empty();
+          }, 4000);
+          // p2 wins
+        }
+      }
+      if (player1Choice === "scissors") {
+        if (player2Choice === "rock") {
+          $("#middle-box").text("Player 2 wins!");
+          player1Ref.once("value", function(data) {
+            loses = data.val().loses;
+          });
+          player2Ref.once("value", function(data) {
+            wins = data.val().wins;
+          });
+
+          player1Ref.update({
+            loses: loses + 1
+          });
+          player2Ref.update({
+            wins: wins + 1
+          });
+          setTimeout(function() {
+            $("#middle-box").empty();
+          }, 4000);
+          // p2 wins
+        }
+        if (player2Choice === "paper") {
+          $("#middle-box").text("Player 1 wins!");
+          player2Ref.once("value", function(data) {
+            loses = data.val().loses;
+          });
+          player1Ref.once("value", function(data) {
+            wins = data.val().wins;
+          });
+
+          player2Ref.update({
+            loses: loses + 1
+          });
+          player1Ref.update({
+            wins: wins + 1
+          });
+          setTimeout(function() {
+            $("#middle-box").empty();
+          }, 4000);
+          // p1 wins
+        }
+        if (player2Choice === "scissors") {
+          $("#middle-box").text("It's a draw");
+          setTimeout(function() {
+            $("#middle-box").empty();
+          }, 4000);
+          // Draw
+        }
+      }
+      player1Ref.update({
+        choice: ""
+      });
+      player2Ref.update({
+        choice: ""
+      });
+    }
+  });
+}
 
 // Add connected to firebase
 function addConnected() {
@@ -181,6 +350,7 @@ function actualGameLogic() {
       player2Ref.update({
         turn: true
       });
+      displayWinner();
     });
   }
 
@@ -211,48 +381,8 @@ function actualGameLogic() {
         choice: this.id,
         turn: false
       });
-      player1Ref.once("value", function(data) {
-        player1Choice = data.val().choice;
-      });
-      player2Ref.once("value", function(data) {
-        player2Choice = data.val().choice;
-      });
-      if (player1Choice === "rock") {
-        if (player2Choice === "rock") {
-          // Draw
-        }
-        if (player2Choice === "paper") {
-          // p2 wins
-        }
-        if (player2Choice === "scissors") {
-          // p1 wins
-        }
-      }
-      if (player1Choice === "paper") {
-        if (player2Choice === "rock") {
-          // p1 wins
-        }
-        if (player2Choice === "paper") {
-          // draw
-        }
-        if (player2Choice === "scissors") {
-          // p2 wins
-        }
-      }
-      if (player1Choice === "scissors") {
-        if (player2Choice === "rock") {
-          // p2 wins
-        }
-        if (player2Choice === "paper") {
-          // p1 wins
-        }
-        if (player2Choice === "scissors") {
-          // Draw
-        }
-      }
+      displayWinner();
     });
-
-    // Testing to see who won player 1 or player 2
   }
 }
 
